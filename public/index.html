@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Farvater demo</title>
+  <style>
+    body { font-family: system-ui, sans-serif; margin: 0; padding: 2rem; background: #f5f6f8; color: #1d2230; }
+    h1 { margin-top: 0; }
+    .cards { display: flex; flex-wrap: wrap; gap: 1rem; }
+    .card { background: #fff; border-radius: 8px; padding: 1rem 1.5rem; min-width: 260px; box-shadow: 0 1px 3px rgba(0,0,0,.1); }
+    .card h2 { margin: 0 0 .5rem; font-size: 1.1rem; }
+    dt { color: #6b7280; font-size: .8rem; text-transform: uppercase; margin-top: .5rem; }
+    dd { margin: 0; font-family: ui-monospace, monospace; word-break: break-all; }
+  </style>
+</head>
+<body>
+  <h1>Farvater demo</h1>
+  <div class="cards">
+    <section class="card" id="frontend"><h2>Frontend</h2><dl></dl></section>
+    <section class="card" id="backend"><h2>Backend</h2><dl></dl></section>
+  </div>
+  <script>
+    function show(id, data) {
+      const list = document.querySelector('#' + id + ' dl');
+      list.replaceChildren();
+      for (const [key, value] of Object.entries(data)) {
+        if (key === 'service') continue;
+        const term = document.createElement('dt');
+        term.textContent = key;
+        const detail = document.createElement('dd');
+        detail.textContent = value;
+        list.append(term, detail);
+      }
+    }
+    async function load(id, url) {
+      try {
+        const response = await fetch(url, { cache: 'no-store' });
+        if (!response.ok) throw new Error(response.status + ' ' + response.statusText);
+        show(id, await response.json());
+      } catch (err) {
+        show(id, { error: String(err) });
+      }
+    }
+    load('frontend', '/version.json');
+    load('backend', '/api/version');
+  </script>
+</body>
+</html>
